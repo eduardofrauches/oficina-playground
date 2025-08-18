@@ -14,4 +14,6 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "==> Executando programa..."
-java -cp out br.com.oficina.Main
+$mainClass = "br.com.oficina.Main"
+if ($args.Count -ge 1) { $mainClass = $args[0] }
+java -cp out $mainClass
