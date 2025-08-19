@@ -1,0 +1,24 @@
+# Compilados / builds
+target/
+out/
+*.class
+*.log
+
+# IDEs
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Banco local (H2)
+*.mv.db
+*.trace.db
+oficina-db.mv.db
+
+# Maven wrapper cache (opcional manter)
+.mvn/wrapper/maven-wrapper.jar
