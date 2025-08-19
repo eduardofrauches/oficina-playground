@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: oficina-api
+
+  sql:
+    init:
+      mode: never
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: INFO

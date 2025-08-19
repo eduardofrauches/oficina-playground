@@ -1,0 +1,38 @@
+
+services:
+  db:
+    image: postgres:15
+    container_name: oficina_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: oficina
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d oficina"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    container_name: oficina_api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_URL: jdbc:postgresql://db:5432/oficina
+      DB_USER: user
+      DB_PASSWORD: pass
+      DB_DRIVER: org.postgresql.Driver
+      HIBERNATE_DDL: update
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:

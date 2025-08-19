@@ -3,66 +3,75 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <!-- Use o parent do Spring Boot (mais simples) -->
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.1</version>
+    <relativePath/>
+  </parent>
+
   <groupId>br.com.oficina</groupId>
   <artifactId>oficina-playground</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 
-   <properties>
+  <properties>
     <java.version>17</java.version>
-   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring-boot.version>3.3.1</spring-boot.version>
-    <hibernate.version>6.5.2.Final</hibernate.version>
-    <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring-boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
-    <!-- Web (Jackson já incluso) -->
+    <!-- Web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- JPA API + Hibernate (usaremos com persistence.xml que você já tem) -->
+    <!-- JPA API + Hibernate (se você usa persistence.xml/JpaUtil) -->
     <dependency>
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>
-      <version>${jakarta.persistence.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>${hibernate.version}</version>
     </dependency>
 
-    <!-- Banco para dev -->
+    <!-- Banco para runtime -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>runtime</scope>
     </dependency>
+
+    <!-- Swagger UI -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.5.0</version>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <!-- Spring Boot plugin -->
+      <!-- Gera o fat jar automaticamente no 'package' -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
-      <!-- (opcional) exec plugin para seus mains standalone -->
+      <!-- Compila com Java 17 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
