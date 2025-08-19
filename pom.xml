@@ -6,56 +6,70 @@
   <groupId>br.com.oficina</groupId>
   <artifactId>oficina-playground</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>oficina-playground</name>
 
-  <properties>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   <properties>
+    <java.version>17</java.version>
+   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring-boot.version>3.3.1</spring-boot.version>
     <hibernate.version>6.5.2.Final</hibernate.version>
     <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
-    <!-- API de JPA -->
+    <!-- Web (Jackson já incluso) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- JPA API + Hibernate (usaremos com persistence.xml que você já tem) -->
     <dependency>
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>
       <version>${jakarta.persistence.version}</version>
     </dependency>
-
-    <!-- Implementação JPA (Hibernate) -->
     <dependency>
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
       <version>${hibernate.version}</version>
     </dependency>
 
-    <!-- Banco em memória / arquivo para dev -->
+    <!-- Banco para dev -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>2.2.224</version>
       <scope>runtime</scope>
-    </dependency>
-
-    <!-- Log simples -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>2.0.12</version>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <!-- Executar uma classe main com mvn exec:java -->
+      <!-- Spring Boot plugin -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.2.0</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- (opcional) exec plugin para seus mains standalone -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
         <configuration>
-          <mainClass>br.com.oficina.JpaClienteMain</mainClass>
+          <release>17</release>
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
     </plugins>

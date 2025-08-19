@@ -1,8 +1,11 @@
 br\com\oficina\adapters\repositories\jpa\JpaUtil.class
 br\com\oficina\ports\ClienteRepository.class
 br\com\oficina\usecases\AtualizarVeiculoUseCase.class
+br\com\oficina\adapters\controllers\ClienteController.class
 br\com\oficina\usecases\AtualizarClienteUseCase.class
 br\com\oficina\usecases\BuscarClienteUseCase.class
+br\com\oficina\adapters\config\BeanConfig.class
+br\com\oficina\OficinaApplication.class
 br\com\oficina\usecases\ListarVeiculosUseCase.class
 br\com\oficina\usecases\RemoverClienteUseCase.class
 br\com\oficina\VeiculoCrudMain.class
