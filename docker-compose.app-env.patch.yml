@@ -1,0 +1,6 @@
+# Use: docker compose -f docker-compose.yml -f docker-compose.app-env.patch.yml up --build
+# This only adds env vars to the 'app' service, keeping your existing compose file intact.
+services:
+  app:
+    environment:
+      SPRING_PROFILES_ACTIVE: docker

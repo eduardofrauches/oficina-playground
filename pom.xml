@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Use o parent do Spring Boot (mais simples) -->
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -14,6 +13,8 @@
   <groupId>br.com.oficina</groupId>
   <artifactId>oficina-playground</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <name>oficina-playground</name>
+  <description>Oficina API</description>
 
   <properties>
     <java.version>17</java.version>
@@ -26,17 +27,19 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- JPA API + Hibernate (se você usa persistence.xml/JpaUtil) -->
+    <!-- Bean Validation -->
     <dependency>
-      <groupId>jakarta.persistence</groupId>
-      <artifactId>jakarta.persistence-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-core</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- Banco para runtime -->
+    <!-- JPA gerenciado pelo Spring Boot -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <!-- Drivers de banco -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
@@ -48,30 +51,28 @@
       <scope>runtime</scope>
     </dependency>
 
-    <!-- Swagger UI -->
+    <!-- Swagger/OpenAPI -->
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>2.5.0</version>
     </dependency>
+
+    <!-- Testes (JUnit 5) -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.10.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <!-- Gera o fat jar automaticamente no 'package' -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
-
-      <!-- Compila com Java 17 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -79,6 +80,14 @@
         <configuration>
           <release>17</release>
           <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+        <configuration>
+          <useModulePath>false</useModulePath>
         </configuration>
       </plugin>
     </plugins>

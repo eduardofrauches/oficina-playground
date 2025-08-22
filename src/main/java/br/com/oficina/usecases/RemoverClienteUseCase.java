@@ -9,7 +9,7 @@ public class RemoverClienteUseCase {
         this.repository = repository;
     }
 
-    public boolean executar(String id) {
+    public boolean executar(Long id) {
         return repository.deleteById(id);
     }
 }

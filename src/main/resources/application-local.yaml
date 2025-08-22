@@ -1,13 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://db:5432/oficina
+    url: jdbc:postgresql://localhost:5432/oficina
     username: oficina
     password: oficina
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: true
     defer-datasource-initialization: true
+
   sql:
     init:
       mode: always

@@ -1,24 +1,23 @@
-# Compilados / builds
+# Maven
 target/
-out/
-*.class
-*.log
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+.mvn/wrapper/maven-wrapper.jar
 
 # IDEs
 .idea/
 *.iml
-.classpath
 .project
+.classpath
 .settings/
+.vscode/
 
-# SO
+# SO / logs
 .DS_Store
 Thumbs.db
+*.log
+logs/
 
-# Banco local (H2)
-*.mv.db
-*.trace.db
-oficina-db.mv.db
-
-# Maven wrapper cache (opcional manter)
-.mvn/wrapper/maven-wrapper.jar
+# Outros
+bin/
+out/

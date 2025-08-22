@@ -1,38 +1,38 @@
-
 services:
   db:
-    image: postgres:15
+    image: postgres:16
     container_name: oficina_db
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
       POSTGRES_DB: oficina
+      POSTGRES_USER: oficina
+      POSTGRES_PASSWORD: oficina
     ports:
       - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-      - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d oficina"]
+      test: ["CMD-SHELL", "pg_isready -U oficina"]
       interval: 5s
-      timeout: 3s
-      retries: 20
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
-  api:
+  app:
     build: .
-    container_name: oficina_api
+    container_name: oficina_app
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      DB_URL: jdbc:postgresql://db:5432/oficina
-      DB_USER: user
-      DB_PASSWORD: pass
-      DB_DRIVER: org.postgresql.Driver
-      HIBERNATE_DDL: update
     ports:
       - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_SQL_INIT_MODE: always
+      SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: "true"
+      # (opcional para debugar)
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_JDBC_DATASOURCE_INIT: DEBUG
+    restart: unless-stopped
 
 volumes:
-  db_data:
+  pgdata:
+
+

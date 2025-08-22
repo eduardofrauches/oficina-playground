@@ -12,7 +12,7 @@ public class BuscarClienteUseCase {
         this.repository = repository;
     }
 
-    public Optional<Cliente> executar(String id) {
+    public Optional<Cliente> executar(Long id) {
         return repository.findById(id);
     }
 }

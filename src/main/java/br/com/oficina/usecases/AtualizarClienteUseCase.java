@@ -11,6 +11,6 @@ public class AtualizarClienteUseCase {
     }
 
     public Cliente executar(Cliente cliente) {
-        return repository.update(cliente);
+        return repository.save(cliente);
     }
 }

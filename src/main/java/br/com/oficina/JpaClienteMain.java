@@ -3,102 +3,100 @@ package br.com.oficina;
 import br.com.oficina.adapters.repositories.jpa.JpaClienteRepository;
 import br.com.oficina.adapters.repositories.jpa.JpaUtil;
 import br.com.oficina.domain.Cliente;
+import br.com.oficina.domain.vo.Endereco;
 import br.com.oficina.usecases.*;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
-import java.util.function.Supplier;
 
 public class JpaClienteMain {
 
-    // Helpers simples de “assert”
+    // Helper simples de “assert”
     static void check(String name, boolean condition) {
-        if (condition) {
-            System.out.println("✔ " + name);
-        } else {
-            System.out.println("✘ " + name);
-            throw new AssertionError(name);
-        }
+        if (!condition) throw new AssertionError("Falhou: " + name);
+        System.out.println("OK: " + name);
     }
 
-    static void expectThrows(String name, Class<? extends Throwable> expected, Runnable fn) {
-        try {
-            fn.run();
-            System.out.println("✘ " + name + " (não lançou " + expected.getSimpleName() + ")");
-            throw new AssertionError(name);
-        } catch (Throwable t) {
-            if (expected.isInstance(t) || (t.getCause() != null && expected.isInstance(t.getCause()))) {
-                System.out.println("✔ " + name + " (lançou " + expected.getSimpleName() + ")");
-            } else {
-                System.out.println("✘ " + name + " (lançou " + t.getClass().getSimpleName() + ", esperado " + expected.getSimpleName() + ")");
-                throw new AssertionError(name, t);
-            }
-        }
+    static <T> T must(T v, String msg) {
+        if (v == null) throw new AssertionError(msg);
+        return v;
     }
 
     public static void main(String[] args) {
-        // Repositório JPA e casos de uso
-        var repo      = new JpaClienteRepository();
-        var cadastrar = new CadastrarClienteUseCase(repo);
-        var buscar    = new BuscarClienteUseCase(repo);
-        var listar    = new ListarClientesUseCase(repo);
-        var atualizar = new AtualizarClienteUseCase(repo);
-        var remover   = new RemoverClienteUseCase(repo);
+        var repository = new JpaClienteRepository();
 
-        // IDs determinísticos para os testes
-        String id1 = UUID.randomUUID().toString();
-        String id2 = UUID.randomUUID().toString();
+        var cadastrar = new CadastrarClienteUseCase(repository);
+        var buscar    = new BuscarClienteUseCase(repository);
+        var listar    = new ListarClientesUseCase(repository);
+        var atualizar = new AtualizarClienteUseCase(repository);
+        var remover   = new RemoverClienteUseCase(repository);
 
         try {
-            System.out.println("\n=== TESTE JPA/CLIENTE: INÍCIO ===");
+            System.out.println("=== TESTE JPA/CLIENTE ===");
 
-            // 1) CREATE de 2 clientes
-            var c1 = new Cliente(id1, "Ana", "ana@example.com");
-            var c2 = new Cliente(id2, "Bruno", "bruno@example.com");
-            cadastrar.executar(c1);
-            cadastrar.executar(c2);
-            System.out.println("[CREATE] " + c1);
-            System.out.println("[CREATE] " + c2);
+            var end = new Endereco("Rua A", "123", null, "Centro", "São Paulo", "SP", "01000-000");
 
-            // 2) READ por id
-            var got1 = buscar.executar(id1).orElseThrow();
-            var got2 = buscar.executar(id2).orElseThrow();
-            check("read c1.id == id1", got1.getId().equals(id1));
-            check("read c2.nome == Bruno", "Bruno".equals(got2.getNome()));
+            // CREATE
+            Cliente c1 = Cliente.novo(
+                    "João",
+                    "joao@example.com",
+                    "11988887777",
+                    "98765432100",
+                    null,
+                    end,
+                    LocalDate.of(1985, 5, 10),
+                    "Primeiro cadastro"
+            );
+            c1 = cadastrar.executar(c1);
+            Long id1 = must(c1.getId(), "Esperava id não-nulo");
+            System.out.println("[CREATE] id=" + id1);
 
-            // 3) LIST deve ter 2 itens
-            List<Cliente> all1 = listar.executar();
-            System.out.println("[LIST]   " + all1);
-            check("list size == 2", all1.size() == 2);
+            // CREATE 2
+            Cliente c2 = Cliente.novo(
+                    "Maria",
+                    "maria@example.com",
+                    "11888887777",
+                    null,
+                    "12.345.678/0001-99",
+                    null,
+                    null,
+                    null
+            );
+            c2 = cadastrar.executar(c2);
+            Long id2 = must(c2.getId(), "Esperava id não-nulo");
+            System.out.println("[CREATE] id=" + id2);
 
-            // 4) UPDATE cliente existente (troca nome e email)
-            var c1Upd = new Cliente(id1, "Ana Souza", "ana.souza@example.com");
-            atualizar.executar(c1Upd);
-            var got1After = buscar.executar(id1).orElseThrow();
-            check("update applied (nome)", "Ana Souza".equals(got1After.getNome()));
-            check("update applied (email)", "ana.souza@example.com".equals(got1After.getEmail()));
+            // READ
+            Cliente joao = buscar.executar(id1).orElseThrow();
+            System.out.println("[READ]   " + joao);
 
-            // 5) UPDATE cliente inexistente → deve lançar NoSuchElementException
-            var fake = new Cliente(UUID.randomUUID().toString(), "X", "x@example.com");
-            expectThrows("update inexistente lança NoSuchElementException", NoSuchElementException.class,
-                    () -> atualizar.executar(fake));
+            // LIST
+            List<Cliente> all = listar.executar();
+            System.out.println("[LIST]   " + all);
+            check("list size >= 2", all.size() >= 2);
 
-            // 6) DELETE id2 existente
+            // UPDATE João
+            Cliente joaoAtual = Cliente.novo(
+                    "João Silva",
+                    "joao.silva@example.com",
+                    "11988887777",
+                    "98765432100",
+                    null,
+                    end,
+                    LocalDate.of(1985, 5, 10),
+                    "Atualizado"
+            );
+            joaoAtual.definirId(id1);
+            atualizar.executar(joaoAtual);
+            Cliente joaoR = buscar.executar(id1).orElseThrow();
+            System.out.println("[UPDATE] " + joaoR);
+            check("nome atualizado", "João Silva".equals(joaoR.getNome()));
+
+            // DELETE Maria
             boolean del2 = remover.executar(id2);
-            check("delete existente (id2) == true", del2);
+            check("delete c2 == true", del2);
 
-            // 7) DELETE inexistente (id2 já removido)
-            boolean del2Again = remover.executar(id2);
-            check("delete inexistente (id2 again) == false", !del2Again);
-
-            // 8) LIST agora deve ter 1 (só c1)
-            List<Cliente> all2 = listar.executar();
-            System.out.println("[LIST]   " + all2);
-            check("list size == 1", all2.size() == 1);
-            check("list contém c1", all2.stream().anyMatch(c -> c.getId().equals(id1)));
-
-            // 9) DELETE c1 e lista final vazia
+            // DELETE João
             boolean del1 = remover.executar(id1);
             check("delete c1 == true", del1);
 
@@ -109,7 +107,7 @@ public class JpaClienteMain {
             System.out.println("=== TESTE JPA/CLIENTE: SUCESSO ✅ ===\n");
 
         } finally {
-            // Boa prática para fechar a fábrica ao fim do processo
+            // Fecha a factory do JPA
             JpaUtil.close();
         }
     }

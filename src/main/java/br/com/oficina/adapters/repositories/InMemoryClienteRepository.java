@@ -4,47 +4,36 @@ import br.com.oficina.domain.Cliente;
 import br.com.oficina.ports.ClienteRepository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Implementação em memória da porta ClienteRepository.
- * Útil para testes locais sem banco/frameworks.
- */
 public class InMemoryClienteRepository implements ClienteRepository {
 
-    private final Map<String, Cliente> database = new HashMap<>();
+    private final Map<Long, Cliente> db = new ConcurrentHashMap<>();
+    private final AtomicLong seq = new AtomicLong(0);
 
     @Override
     public Cliente save(Cliente cliente) {
-        if (cliente == null) throw new IllegalArgumentException("cliente não pode ser nulo");
-        database.put(cliente.getId(), cliente);
+        if (cliente.getId() == null) {
+            Long id = seq.incrementAndGet();
+            cliente.definirId(id); // domínio permite setar ID atribuído pelo repositório
+        }
+        db.put(cliente.getId(), cliente);
         return cliente;
     }
 
     @Override
-    public Optional<Cliente> findById(String id) {
-        if (id == null || id.isBlank()) return Optional.empty();
-        return Optional.ofNullable(database.get(id));
+    public Optional<Cliente> findById(Long id) {
+        return Optional.ofNullable(db.get(id));
     }
 
     @Override
     public List<Cliente> findAll() {
-        return new ArrayList<>(database.values());
+        return new ArrayList<>(db.values());
     }
 
     @Override
-    public Cliente update(Cliente cliente) {
-        if (cliente == null) throw new IllegalArgumentException("cliente não pode ser nulo");
-        String id = cliente.getId();
-        if (id == null || id.isBlank() || !database.containsKey(id)) {
-            throw new NoSuchElementException("Cliente não encontrado para update: " + id);
-        }
-        database.put(id, cliente);
-        return cliente;
-    }
-
-    @Override
-    public boolean deleteById(String id) {
-        if (id == null || id.isBlank()) return false;
-        return database.remove(id) != null;
+    public boolean deleteById(Long id) {
+        return db.remove(id) != null;
     }
 }
