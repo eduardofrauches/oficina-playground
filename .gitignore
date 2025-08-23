@@ -15,9 +15,17 @@ target/
 # SO / logs
 .DS_Store
 Thumbs.db
+# Logs
 *.log
 logs/
 
 # Outros
 bin/
 out/
+
+# Banco local (H2 / outros)
+*.mv.db
+*.h2.db
+
+# Arquivos temporários
+*.tmp
