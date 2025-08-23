@@ -19,3 +19,17 @@ ON CONFLICT (id) DO NOTHING;
 SELECT setval(pg_get_serial_sequence('clientes','id'),
               COALESCE((SELECT MAX(id) FROM clientes), 0) + 1, false)
 WHERE pg_get_serial_sequence('clientes','id') IS NOT NULL;
+
+
+-- Exemplo: placas únicas e clientes 1..3 já existentes
+INSERT INTO veiculos (placa, marca, modelo, ano, cor, observacoes, cliente_id, ativo) VALUES
+('ABC1D23', 'Fiat', 'Argo', 2020, 'Prata', 'Revisão recente', 1, true)
+ON CONFLICT (placa) DO NOTHING;
+
+INSERT INTO veiculos (placa, marca, modelo, ano, cor, observacoes, cliente_id, ativo) VALUES
+('DEF4G56', 'VW', 'Polo', 2019, 'Branco', null, 2, true)
+ON CONFLICT (placa) DO NOTHING;
+
+INSERT INTO veiculos (placa, marca, modelo, ano, cor, observacoes, cliente_id, ativo) VALUES
+('HIJ7K89', 'Chevrolet', 'Onix', 2021, 'Preto', 'Troca de pneus recente', 3, true)
+ON CONFLICT (placa) DO NOTHING;

@@ -1,3 +1,4 @@
+# src/main/resources/application-local.yaml
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/oficina
@@ -8,10 +9,28 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    # Garante que o Hibernate cria/atualiza o schema ANTES do data.sql
     defer-datasource-initialization: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   sql:
     init:
       mode: always
+      # Lê o data.sql em UTF-8 (evita "Jo├úo"/"S├úo")
       encoding: UTF-8
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: warn
+    org.hibernate.type.descriptor.sql: warn
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/index.html
+  api-docs:
+    path: /v3/api-docs

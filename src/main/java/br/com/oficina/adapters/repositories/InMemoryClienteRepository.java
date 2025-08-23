@@ -2,11 +2,15 @@ package br.com.oficina.adapters.repositories;
 
 import br.com.oficina.domain.Cliente;
 import br.com.oficina.ports.ClienteRepository;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Repository
+@Profile("dev")
 public class InMemoryClienteRepository implements ClienteRepository {
 
     private final Map<Long, Cliente> db = new ConcurrentHashMap<>();
@@ -16,7 +20,8 @@ public class InMemoryClienteRepository implements ClienteRepository {
     public Cliente save(Cliente cliente) {
         if (cliente.getId() == null) {
             Long id = seq.incrementAndGet();
-            cliente.definirId(id); // domínio permite setar ID atribuído pelo repositório
+            // domínio permite receber o id gerado pelo repositório
+            cliente.definirId(id);
         }
         db.put(cliente.getId(), cliente);
         return cliente;
