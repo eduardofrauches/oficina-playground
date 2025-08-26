@@ -1,3 +1,17 @@
 spring:
   profiles:
     active: local
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-change-me}
+    issuer: oficina
+    ttlMillis: 3600000   # 1 hora
+
+
+springdoc:
+  swagger-ui:
+    tagsSorter: alpha         # ordena tags por nome
+    operationsSorter: method  # (opcional) ordena operações por método
+    docExpansion: none        # abre colapsado → mostra a lista de tags
+    persistAuthorization: true # mantém o token após refresh

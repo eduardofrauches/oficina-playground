@@ -1,6 +1,21 @@
 -- data.sql — SOMENTE CLIENTES (seguro para o schema atual)
 -- Obs.: Mantém ON CONFLICT para ser idempotente.
 
+-- Seed de roles
+INSERT INTO roles (id, tipo, descricao) VALUES 
+  (1, 'admin', 'Administradores do Sistema'),
+  (2, 'atendente', 'Atendente da Oficina'),
+  (3, 'mecanico', 'Mecanico responsável pela manutenção dos veículos'),
+  (4, 'cliente', 'Cliente que irá visualizar suas ordens de serviços e orçamentos.')
+ON CONFLICT (id) DO NOTHING;
+
+-- USUÁRIO ADMIN (senha = "12345", já hasheada com BCrypt cost 10)
+INSERT INTO usuarios (id, username, nome, email, password, ativo, role_id)
+VALUES (1, 'admin', 'Administrador', 'admin@oficina.local',
+        '$2b$10$gy/opxKgad0pDVHYtvR/z.Zy8Qh286dmK2Akke.e7YyapVrdM83UO', true, 1)
+ON CONFLICT DO NOTHING;
+
+
 INSERT INTO clientes (
     id, nome, cpf, cnpj, email, telefone, data_cadastro, data_nascimento, observacao,
     logradouro, numero, complemento, bairro, cidade, estado, cep
