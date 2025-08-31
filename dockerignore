@@ -1,0 +1,20 @@
+# Ignore Maven build output
+target/*
+# But keep built JARs so Docker can copy them
+!target/*.jar
+
+# VCS
+.git
+.gitignore
+
+# IDE/editor junk
+**/.idea
+**/.vscode
+**/.classpath
+**/.project
+**/.settings
+**/.DS_Store
+
+# Logs & temp
+*.log
+*.tmp
